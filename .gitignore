@@ -1,0 +1,6 @@
+**/wandb/*
+**.csv
+**.pkl
+**.txt
+**.pyc
+**-checkpoint**
