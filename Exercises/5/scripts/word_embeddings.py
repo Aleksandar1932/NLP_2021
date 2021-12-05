@@ -26,7 +26,7 @@ def load_embeddings(file_name, vocabulary):
     return embeddings
 
 
-def load_embedding_weights(vocabulary, embedding_size, embedding_type, data_path="."):
+def load_embedding_weights(vocabulary, embedding_size, embedding_type, data_path="../data"):
     """
     Creates and loads embedding weights.
     :param vocabulary: vocabulary
@@ -47,8 +47,8 @@ def load_embedding_weights(vocabulary, embedding_size, embedding_type, data_path
             embeddings = load_embeddings(f'{data_path}/glove.6B.{embedding_size}d.txt', vocabulary)
         else:
             embeddings = load_embeddings(f'{data_path}/word2vecSG.iSarcasamEval.{embedding_size}d.txt', vocabulary)
-        embedding_matrix = np.zeros((len(vocabulary) + 1, embedding_size))
-        for i in range(len(vocabulary) + 1):
+        embedding_matrix = np.zeros((len(vocabulary), embedding_size))
+        for i in range(len(vocabulary)):
             if vocabulary[i] in embeddings.keys():
                 embedding_matrix[i] = embeddings[vocabulary[i]]
             else:
