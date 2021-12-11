@@ -1,9 +1,11 @@
-import numpy as np
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 from uuid import uuid4
 
+import numpy as np
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Input, Embedding, LSTM, Dense
 from tensorflow.keras.models import Model
+from nltk.translate.bleu_score import sentence_bleu
+from rouge_score import rouge_scorer
 
 
 def create_model(texts_size, summaries_size, vocabulary_size, embedding_size, embeddings=None, name=None) -> Model:
@@ -37,22 +39,23 @@ def create_model(texts_size, summaries_size, vocabulary_size, embedding_size, em
     # Compile the model
     model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
     model._name = name
-    return Model
+    return model
 
 
-def decode(model, input_sent, word_to_id, padding_size, verbose=False):
+def decode(model, input_sent, word_to_id, id_to_word, padding_size, verbose=False):
     generated_sentence = []
     generated_sentence.append(word_to_id['<START>'])
 
     for i in range(padding_size):
-        output_sent = pad_sequences([generated_sentence], padding_size)
+        output_sent = pad_sequences([generated_sentence], padding_size-1)
         predictions = model.predict(
             [np.expand_dims(input_sent, axis=0), output_sent])
         next_word = np.argmax(predictions)
         if verbose:
-            print(f"{word_to_id[str(next_word)]}", end=" ")
+            print(id_to_word[next_word])
         generated_sentence.append(next_word)
 
+    generated_sentence.append(word_to_id['</END>'])
     return generated_sentence
 
 
@@ -62,3 +65,33 @@ def convert(sentences, id_to_word):
         output_sentences.append(' '.join([id_to_word[i] for i in sent]))
 
     return output_sentences
+
+
+def calculate_bleu(refences, hypothesis, verbose=False):
+    scores = []
+    for pred, gt in zip(hypothesis, refences):
+        score = sentence_bleu(gt, pred)
+        scores.append(score)
+
+        if verbose:
+            print(f"Gold Truth: {gt}")
+            print(f"Reference Sentence: {pred}")
+            print('BLEU score = {}'.format(score))
+
+    return np.mean(scores)
+
+
+def calculate_rouge(refences, hypothesis, verbose=False):
+    scorer = rouge_scorer.RougeScorer(['rouge1', 'rougeL'], use_stemmer=True)
+    scores = []
+
+    for pred, gt in zip(hypothesis, refences):
+        res = scorer.score(pred, gt)
+        scores.append(res)
+
+        if verbose:
+            print(f"Gold Truth: {gt}")
+            print(f"Reference Sentence: {pred}")
+            print('Rouge score = {}'.format(res))
+
+    return scores

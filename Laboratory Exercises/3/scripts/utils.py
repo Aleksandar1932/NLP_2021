@@ -1,12 +1,10 @@
-import typing
-import pandas as pd
 import os
-from dotenv import load_dotenv
+import typing
+
+import pandas as pd
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 ENGLISH_STOPWORDS = stopwords.words('english')
-
-load_dotenv()
 
 TOPICS_PATH = os.getenv(
     "TOPICS_PATH") or "/mnt/d/Downloads/OpinosisDataset1.0_0/topics"
