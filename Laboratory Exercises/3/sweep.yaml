@@ -6,6 +6,7 @@ command:
 - ${program}
 - ${args}
 
+max_iter: 10
 metric:
   name: validation_accuracy
   goal: maximize
