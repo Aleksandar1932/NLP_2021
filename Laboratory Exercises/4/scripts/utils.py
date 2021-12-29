@@ -21,6 +21,6 @@ def load_data() -> pd.DataFrame:
     Loads the data from the csv file.
     :return: DataFrame
     """
-    data_dir = os.getenv("DATA_DIR") or "/home/aleksandar/projects/NLP_2021/Laboratory Exercises/4/data"
+    data_dir = os.getenv("DATA_DIR") or "data"
     data_file = os.getenv("DATA_FILE") or "trial.csv"
     return pd.read_csv(os.path.join(data_dir, data_file), delimiter="	")
